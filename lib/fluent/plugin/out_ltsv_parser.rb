@@ -5,7 +5,8 @@ class Fluent::ParserOutput < Fluent::Output
     config_param :tag, :string, :default => nil
     config_param :reserve_data, :bool, :default => false
     config_param :key_name, :string
-    config_param :filter_in, :string
+    config_param :filter_in, :string , :default => ""
+    config_param :add_prefix, :string ,:default => nil
 
     attr_reader :parser
 
@@ -30,6 +31,9 @@ class Fluent::ParserOutput < Fluent::Output
 
     def emit(tag,es,chain)
         tag = @tag || tag
+        if @add_prefix
+            tag = @add_prefix + "." + tag
+        end
         es.each do |time,record|
             raw_value = record[@key_name]
             t,values = raw_value ? filter(parse(raw_value)) : [nil,nil]
