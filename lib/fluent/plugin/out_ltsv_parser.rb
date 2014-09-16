@@ -1,4 +1,3 @@
-require_relative './parser'
 
 class Fluent::ParserOutput < Fluent::Output
     Fluent::Plugin.register_output('ltsv_parser', self)
@@ -7,8 +6,6 @@ class Fluent::ParserOutput < Fluent::Output
     config_param :key_name, :string
     config_param :filter_in, :string , :default => ""
     config_param :add_prefix, :string ,:default => nil
-
-    attr_reader :parser
 
     def initialize
         super
@@ -36,12 +33,11 @@ class Fluent::ParserOutput < Fluent::Output
         end
         es.each do |time,record|
             raw_value = record[@key_name]
-            t,values = raw_value ? filter(parse(raw_value)) : [nil,nil]
-            t ||= time
+            values = raw_value ? filter(parse(raw_value)) : nil
 
             r = @reserve_data ? record.merge(values) : values 
             if r
-                Fluent::Engine.emit(tag,t,r)
+                Fluent::Engine.emit(tag,time,r)
             end
         end
 
@@ -54,10 +50,10 @@ class Fluent::ParserOutput < Fluent::Output
         if @filter_in.length > 0 then
             record.select{ |x| @filter_in.include? x } 
         end
-        record
+        nil
     end
 
-    def parse(string)
-        return @parser.parse(string) 
+    def parse(text)
+        return Hash[text.split("\t").map{|p| p.split(":", 2)}]
     end
 end
