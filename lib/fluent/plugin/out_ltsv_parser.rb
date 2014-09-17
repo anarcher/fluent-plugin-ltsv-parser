@@ -22,7 +22,6 @@ class Fluent::ParserOutput < Fluent::Output
         if @key_name[0] == ":" 
             @key_name = @key_name[1..-1].to_sym
         end
-        @parser = FluentExt::LTSVParser.new(log())
         @filter_in = @filter_in.split(",").map(&:strip).select{ |e| e != "" }
     end
 
@@ -48,7 +47,10 @@ class Fluent::ParserOutput < Fluent::Output
 
     def filter(record)
         if @filter_in.length > 0 then
-            record.select{ |x| @filter_in.include? x } 
+            _record = record.select{ |x| @filter_in.include? x } 
+            if _record.keys.length == @filter_in.length then
+                return _record
+            end
         end
         nil
     end
