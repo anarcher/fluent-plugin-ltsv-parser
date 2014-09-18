@@ -57,8 +57,8 @@ class Fluent::ParserOutput < Fluent::Output
             if  _record.keys.length >= @min_field then
                 return _record
             else
-                log.warn("#{record} has an missing fields")
-                nil
+                #log.debug("#{record} has an missing fields")
+                return nil
             end
         end
 
