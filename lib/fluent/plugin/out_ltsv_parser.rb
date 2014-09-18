@@ -4,7 +4,7 @@ class Fluent::ParserOutput < Fluent::Output
     config_param :tag, :string, :default => nil
     config_param :reserve_data, :bool, :default => false
     config_param :key_name, :string
-    config_param :key_fields, :string , :default => ""
+    config_param :filter_in, :string , :default => ""
     config_param :add_prefix, :string ,:default => nil
 
     def initialize
@@ -22,7 +22,7 @@ class Fluent::ParserOutput < Fluent::Output
         if @key_name[0] == ":" 
             @key_name = @key_name[1..-1].to_sym
         end
-        @key_fields = @key_fields.split(",").map(&:strip).select{ |e| e != "" }
+        @filter_in = @filter_in.split(",").map(&:strip).select{ |e| e != "" }
     end
 
     def emit(tag,es,chain)
@@ -46,9 +46,9 @@ class Fluent::ParserOutput < Fluent::Output
     private
 
     def filter(record)
-        if @key_fields.length > 0 then
-            _record = record.select{ |x| @key_fields.include? x } 
-            if _record.keys.length == @key_fields.length then
+        if @filter_in.length > 0 then
+            _record = record.select{ |x| @filter_in.include? x } 
+            if _record.keys.length == @filter_in.length then
                 return _record
             else
                 log.warn("#{record} has an missing fields")
