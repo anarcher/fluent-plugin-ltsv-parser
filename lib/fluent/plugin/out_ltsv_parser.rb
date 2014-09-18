@@ -6,6 +6,7 @@ class Fluent::ParserOutput < Fluent::Output
     config_param :key_name, :string
     config_param :filter_in, :string , :default => ""
     config_param :add_prefix, :string ,:default => nil
+    config_param :min_field, :integer , :default => nil
 
     def initialize
         super
@@ -46,17 +47,22 @@ class Fluent::ParserOutput < Fluent::Output
     private
 
     def filter(record)
-        if @filter_in.length > 0 then
-            _record = record.select{ |x| @filter_in.include? x } 
-            if _record.keys.length == @filter_in.length then
+        if @filter_in.length <= 0 then
+            return record
+        end
+
+        _record = record.select{ |x| @filter_in.include? x } 
+
+        if not @min_field.nil? then
+            if  _record.keys.length >= @min_field then
                 return _record
             else
                 log.warn("#{record} has an missing fields")
+                nil
             end
-        else
-            return record
         end
-        nil
+
+        return _record
     end
 
     def parse(text)
