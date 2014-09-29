@@ -73,6 +73,7 @@ class Fluent::ParserOutput < Fluent::Output
     end
 
     def transform_values(record)
+        return record if record.nil?
         return record if @transform_values.nil?
 
         @transform_values.each do |key,value|
