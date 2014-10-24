@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |gem|
   gem.name          = "fluent-plugin-ltsv-parser"
-  gem.version       = "0.0.10"
+  gem.version       = "0.0.11"
   gem.authors       = ["anarcher"]
   gem.email         = ["anarcher@gmail.com"]
   gem.description   = %q{fluentd plugin to ltsv parse single field, or to combine log structure into single field}

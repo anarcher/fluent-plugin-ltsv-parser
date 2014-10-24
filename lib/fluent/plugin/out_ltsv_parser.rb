@@ -7,6 +7,7 @@ class Fluent::ParserOutput < Fluent::Output
     config_param :filter_in, :string , :default => ""
     config_param :add_prefix, :string ,:default => nil
     config_param :min_field, :integer , :default => nil
+    config_param :required_fields,:string,  :default => nil
     config_param :transform_values,:string,:default => nil
 
     def initialize
@@ -27,10 +28,13 @@ class Fluent::ParserOutput < Fluent::Output
         end
 
         @filter_in = @filter_in.split(",").map(&:strip).select{ |e| e != "" }
+        @required_fields = @required_fields.split(",").map(&:strip).select{ |e| e != "" }
 
         if @transform_values then
             @transform_values = Hash[@transform_values.split(",").map{|p| p.split(":",2)}]
         end
+
+
     end
 
     def emit(tag,es,chain)
@@ -54,6 +58,12 @@ class Fluent::ParserOutput < Fluent::Output
     private
 
     def filter(record)
+        if @required_fields.length > 0 then
+            if record.count { |k,v| @required_fields.include? k } != @required_fields.length then
+                return nil
+            end
+        end
+
         if @filter_in.length <= 0 then
             return record
         end
