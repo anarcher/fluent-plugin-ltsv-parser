@@ -7,7 +7,7 @@ class Fluent::ParserOutput < Fluent::Output
     config_param :filter_in, :string , :default => ""
     config_param :add_prefix, :string ,:default => nil
     config_param :min_field, :integer , :default => nil
-    config_param :required_fields,:string,  :default => nil
+    config_param :required_fields,:string,  :default => ""
     config_param :transform_values,:string,:default => nil
 
     def initialize
